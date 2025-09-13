@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Dagcrypt unlocker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      color: #333;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #0078D7;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005a9e;
+    }
+    #output {
+      margin-top: 20px;
+      background-color: #fff;
+      padding: 15px;
+      border-left: 4px solid #0078D7;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔓 Dagcrypt unlocker</h1>
+  <input type="file" id="fileInput" accept=".dagcrypt">
+  <input type="password" id="keyInput" placeholder="Geheime sleutel">
+  <button onclick="decryptFile()">Ontsleutelen</button>
+  <div id="output"></div>
+
+  <script>
+    function decryptFile() {
+      const file = document.getElementById('fileInput').files[0];
+      const key = document.getElementById('keyInput').value;
+
+      if (!file || !key) {
+        alert("Selecteer een bestand en voer een sleutel in.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const encryptedText = e.target.result;
+          const decrypted = CryptoJS.AES.decrypt(encryptedText, key);
+          const plaintext = decrypted.toString(CryptoJS.enc.Utf8);
+
+          if (!plaintext) {
+            throw new Error("Ongeldige sleutel of corrupt bestand.");
+          }
+
+          document.getElementById('output').innerText = plaintext;
+        } catch (err) {
+          alert("Ontsleuteling mislukt: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html>
